@@ -13,4 +13,4 @@ Conditions:
 4) Last row will contain the name of the 
    sheet it was taken from, adjust header accordingly
 
-5) Do not have any data sheets named "Master" and "RawData"
+5) Do not have any data sheets named "Master"
