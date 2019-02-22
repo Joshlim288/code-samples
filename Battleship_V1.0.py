@@ -252,7 +252,7 @@ for turn in range(num_turns):
 1) Work on effciency
 
 2) More ships
-  - fix length of ships?
+  - fixed length of ships
   - OR create formula to check max length of ship based on numships and board size
   - names for ships, can put in new list with corresponding indexes
 
@@ -263,10 +263,9 @@ for turn in range(num_turns):
 5) Create a proper interface with pygame
 
 6) More features
-  - ship specials?(carpet bombing, rapid fire, EMP, submerge and move, ram)
+  - ship specials
   - statistics
   - rematches
-  - custom name?
-  - kill switch
+  - custom names for ships
 
 """
