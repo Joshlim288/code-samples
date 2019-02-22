@@ -10,7 +10,7 @@ def random_col(board, hori_shiplength):
     return randint(0, board_width - hori_shiplength)
 
 
-# player 1 and player 2 board are flipped, to make it easier later
+# player 1 and player 2 board are flipped, to make it easier to toggle between solo and duo play
 def print_board(board1, board2):
     index = 1
     if num_players == 2:
@@ -107,6 +107,8 @@ while menu_selection != '1':
                     board_length = user_input
                     print('done')
                     settings_selection = '0'
+                else:
+                    print('Enter a valid board size')
             else:
                 print('Enter a valid board size')
 
@@ -119,6 +121,8 @@ while menu_selection != '1':
                     num_ships = user_input
                     print('done')
                     settings_selection = '0'
+                else:
+                    print('Enter a valid number of ships')
             else:
                 print('Enter a valid number of ships')
                 
@@ -127,10 +131,12 @@ while menu_selection != '1':
             print(' '*6 + 'Enter no. of turns\n')
             user_input = input()
             if user_input.isdigit():
-                if 1 <= user_input:
+                if user_input => 1:
                     num_turns = user_input
                     print('done')
                     settings_selection = '0'
+                else:
+                    print('Enter a valid number of turns')
             else:
                 print('Enter a valid number of turns')
 
@@ -189,6 +195,7 @@ for turn in range(num_turns):
         i = turn % 2
     else:
         i = 1
+    # get guess
     print('\nTurn: {}'.format(turn+1))
     while 1:
         guess = input( "{} input coordinates: ".format(players[i]['name']) )
@@ -216,7 +223,7 @@ for turn in range(num_turns):
 
 
     print( '\n{}\n'.format('-'*10) )
-
+    # check for hit
     for ship in players[i]['ships']:
         if guess in ship:
             players[i]['board'][guess_row][guess_col] = 'X'
