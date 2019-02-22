@@ -131,5 +131,4 @@ Application.ScreenUpdating = True
 Application.DisplayAlerts = True
 End Sub
 
-'Combine Results and master tab
-'Fix the start and end cell finding
+
