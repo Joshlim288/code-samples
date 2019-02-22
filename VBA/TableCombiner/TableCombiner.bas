@@ -8,7 +8,7 @@ Option Explicit
 ' 3) All tables must be in the same row range on each sheet.
 ' 4) Last row will contain the name of the sheet it was taken from, adjust header accordingly
 ' 5) Define variables in the section below
-' 6) Do not have any data sheets named "Master" and "Results"
+' 6) Do not have any data sheets named "Results"
 ' 7) If you want to fix the fields this macro asks for to increase speed, remove the apostrophes for the relevant sections
 
 
