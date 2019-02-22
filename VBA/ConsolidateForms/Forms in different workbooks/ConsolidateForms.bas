@@ -40,7 +40,7 @@ Title = "Table Combiner"
 Response = MsgBox(Msg, Style, Title)
 If Response = vbNo Then End
 
-''PROMPT
+'Prompt      
 Workbooks.Open (StrExtension)
 'Ask user for how many fields to consolidate
 Msg = "How many fields do you want to consolidate?"
@@ -65,21 +65,6 @@ For I = 1 To NumFields
   If FieldsName(I) = False Then End
 Next I
 Workbooks.Open(StrExtension).Close (False)
-
-''END PROMPT
-
-
-
-''IN CODE
-'NumFields = 1
-
-''Repeat these for as many fields as you have
-'FieldsName.Add Item:="Name"
-'FieldsRef.Add Item:="AV10"
-
-''END IN CODE
-
-
 
 
 'For Speed
@@ -146,5 +131,4 @@ Application.DisplayAlerts = True
 End Sub
 
 'ToDo:
-'1) Create Forms in same workbook version
-'2) Make code work for results in diff directory
+'1) Make code work for results in diff directory
