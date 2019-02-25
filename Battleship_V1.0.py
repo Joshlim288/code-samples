@@ -257,6 +257,7 @@ for turn in range(num_turns):
 
 """
 1) Work on effciency
+  - generate just 1 board, and 1 board of ships for single player
 
 2) More ships
   - fixed length of ships
