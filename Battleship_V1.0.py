@@ -36,7 +36,8 @@ num_players = 1
 max_ship_length = 4 # At most board length/width
 
 
-
+# think of board and ship as 
+# 'board player is firing at' and 'ships player needs to sink'
 players = [
 {  'name': 'Player 1',
    'board': [],
@@ -141,7 +142,8 @@ while menu_selection != '1':
 
 rematch = 'Y'
 while rematch == 'Y':
-    
+    shots_hit = 0
+    ships_sunk = 0
     # generate board
     for player in players:
         for x in range(board_length):
@@ -241,9 +243,10 @@ while rematch == 'Y':
                             print('\n{} wins!\n'.format(players[i]['name']) )
                     else:
                         print('\nYou sunk a battleship!\n')
-                    
+                        ships_sunk += 1
                 else:
                     print ('\nYou hit a battleship!\n')
+                    shots_hit += 1
         
         if players[i]['board'][guess_row][guess_col] != 'X':
                 print ('\nYou missed!\n')
@@ -251,7 +254,15 @@ while rematch == 'Y':
 
 
         if turn == num_turns-1 or not players[i]['ships']:
-            print('\nGame Over')
+            print('\nGame Over\n')
+            if num_players == 1:
+                print(' '*10 + 'Statistics')
+                print('-'*30)
+                print ('Shots fired: {}'.format(str(num_turns)))
+                print('Shots hit: {}'.format(str(shots_hit)))
+                print('Ships sunk: {}'.format(str(ships_sunk)))
+                print('Ships remaining: {}'.format(str(num_ships-ships_sunk)))
+                print('Accuracy: {}'.format(str((shots_hit//num_turns)*100)+'%'))
             while 1:
                 rematch = input('Play again? (Y/N)').upper()
                 if rematch != 'Y' and rematch != 'N':
@@ -260,7 +271,7 @@ while rematch == 'Y':
                     break
 
 
-print('Goodbye!')
+print('\nGoodbye!')
 
 
 """
@@ -270,11 +281,11 @@ print('Goodbye!')
   - fixed length of ships
   - OR create formula to check max length of ship based on numships and board size
   - names for ships, can put in new list with corresponding indexes
-4) Allow player to change settings thru console
-  - allow them to place ships themselves
-5) Create a proper interface with pygame
-6) More features
+3) Allow player to place ships themselves
+4) Create a proper interface with pygame
+5) More features
   - ship specials
-  - statistics
+  - statistics for 2 player
   - custom names for ships
+6) each player goes once during 1 turn, not each one on alternate turns
 """
