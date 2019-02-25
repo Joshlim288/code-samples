@@ -27,7 +27,7 @@ def print_board(board1, board2):
             index += 1
 
 
-# declare variables
+# declare default variables
 board_length = 6
 board_width = 6 # Max 26
 num_turns = 15
@@ -53,10 +53,6 @@ players = [
 ]
 
 letters = string.ascii_uppercase[:board_width]
-
-for player in players:
-    for x in range(board_length):
-        player['board'].append(["O"] * board_width)
 
 
 #menu start
@@ -143,7 +139,11 @@ while menu_selection != '1':
         if settings_selection == '5':
             menu_selection = '0'
 
-
+# generate board
+for player in players:
+    for x in range(board_length):
+        player['board'].append(["O"] * board_width)
+        
 # generate ships
 
 print('Generating ships...')
