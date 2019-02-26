@@ -18,7 +18,7 @@ def print_board(board1, board2):
         for row1, row2 in zip(board1, board2):
             print(str(index) + ' ' + ' '.join(row2) + ' '*10 + str(index) + ' ' + ' '.join(row1))
             index += 1
-        print(' '*3 + 'Player 1' + ' '*15 + 'Player 2')
+        print(' '+' '*(board_width-4)+ 'Player 1' + ' '*11 +  ' '*2*(board_width-4) + 'Player 2')
 
     else:
         print( ' '*2 + ' '.join(letters[:board_width]) )
@@ -28,10 +28,10 @@ def print_board(board1, board2):
 
 
 # declare default variables
-board_length = 6
-board_width = 6 # Max 26
-num_turns = 15
-num_ships = 2
+board_length = 4
+board_width = 4 # Max 26
+num_turns = 4
+num_ships = 1
 num_players = 1
 max_ship_length = 4 # At most board length/width
 
@@ -42,13 +42,17 @@ players = [
 {  'name': 'Player 1',
    'board': [],
    'ships': [],
-   'occupied_coords': []
+   'occupied_coords': [],
+   'ships_sunk': 0,
+   'shots_hit': 0
 },
 
 {  'name': 'Player 2',
    'board': [],
    'ships': [],
-   'occupied_coords': []
+   'occupied_coords': [],
+   'ships_sunk': 0,
+   'shots_hit': 0
 }
 
 ]
@@ -142,8 +146,6 @@ while menu_selection != '1':
 
 rematch = 'Y'
 while rematch == 'Y':
-    shots_hit = 0
-    ships_sunk = 0
     # generate board
     for player in players:
         for x in range(board_length):
@@ -197,78 +199,76 @@ while rematch == 'Y':
 
     # Game start
     for turn in range(num_turns):
-        if num_players == 2:
-            i = turn % 2
-        else:
-            i = 0
+        for i in range(num_players):
         # get guess
-        print_board(players[0]['board'], players[1]['board'])
-        print('\nTurn: {}'.format(turn+1))
-        while 1:
-            guess = input( '{} input coordinates: '.format(players[i]['name']) )
-            if not guess:
-                print('Please input coordinates')
-            else:
-                if not guess[0].isalpha() or not guess[1:].isdigit():  # Only works for letters up till Z
-                    print('Please input coordinates in the format (letter)(number), A1 for example')
-                else:
-                    guess_col = letters.index(guess[0].upper())
-                    guess_row = int(guess[1:]) - 1
-
-                    if not 0 <= guess_row < board_length or not 0 <= guess_col < board_width:
-                        print("Oops, that's not even in the ocean. Guess again!")
-        
-                    else:
-                        tile = players[i]['board'][guess_row][guess_col]
-                        guess = (guess_row,guess_col)
-    
-                        if tile == 'M' or tile == 'X':
-                            print('You guessed that one already.')
-                        else:
-                            break
-    
-    
-    
-        print( '\n{}\n'.format('-'*10) )
-        # check for hit
-        for ship in players[i]['ships']:
-            if guess in ship:
-                players[i]['board'][guess_row][guess_col] = 'X'
-                ship.remove(guess)
-                if not ship:
-                    players[i]['ships'].remove([])
-                    if not players[i]['ships']:
-                        print('\nYou have sunk all the battleships!\n')
-                        if num_players != 1:
-                            print('\n{} wins!\n'.format(players[i]['name']) )
-                    else:
-                        print('\nYou sunk a battleship!\n')
-                        ships_sunk += 1
-                else:
-                    print ('\nYou hit a battleship!\n')
-                    shots_hit += 1
-        
-        if players[i]['board'][guess_row][guess_col] != 'X':
-                print ('\nYou missed!\n')
-                players[i]['board'][guess_row][guess_col] = 'M'
-
-
-        if turn == num_turns-1 or not players[i]['ships']:
-            print('\nGame Over\n')
-            if num_players == 1:
-                print(' '*10 + 'Statistics')
-                print('-'*30)
-                print ('Shots fired: {}'.format(str(num_turns)))
-                print('Shots hit: {}'.format(str(shots_hit)))
-                print('Ships sunk: {}'.format(str(ships_sunk)))
-                print('Ships remaining: {}'.format(str(num_ships-ships_sunk)))
-                print('Accuracy: {}'.format(str((shots_hit//num_turns)*100)+'%'))
+            print_board(players[0]['board'], players[1]['board'])
+            print('\nTurn: {}'.format(turn+1))
             while 1:
-                rematch = input('Play again? (Y/N)').upper()
-                if rematch != 'Y' and rematch != 'N':
-                    print('Please enter Y or N')
+                guess = input( '{} input coordinates: '.format(players[i]['name']) )
+                if not guess:
+                    print('Please input coordinates')
                 else:
-                    break
+                    if not guess[0].isalpha() or not guess[1:].isdigit():  # Only works for letters up till Z
+                        print('Please input coordinates in the format (letter)(number), A1 for example')
+                    else:
+                        guess_col = letters.index(guess[0].upper())
+                        guess_row = int(guess[1:]) - 1
+    
+                        if not 0 <= guess_row < board_length or not 0 <= guess_col < board_width:
+                            print("Oops, that's not even in the ocean. Guess again!")
+            
+                        else:
+                            tile = players[i]['board'][guess_row][guess_col]
+                            guess = (guess_row,guess_col)
+    
+                            if tile == 'M' or tile == 'X':
+                                print('You guessed that one already.')
+                            else:
+                                break
+    
+    
+    
+            print( '\n{}\n'.format('-'*10) )
+            # check for hit
+            for ship in players[i]['ships']:
+                if guess in ship:
+                    players[i]['board'][guess_row][guess_col] = 'X'
+                    ship.remove(guess)
+                    if not ship:
+                        players[i]['ships'].remove([])
+                        if not players[i]['ships']:
+                            print('\nYou have sunk all the battleships!\n')
+                            if num_players != 1:
+                                print('\n{} wins!\n'.format(players[i]['name']) )
+                        else:
+                            print('\nYou sunk a battleship!\n')
+                            players[i]['ships_sunk'] += 1
+                    else:
+                        print ('\nYou hit a battleship!\n')
+                        players[i]['shots_hit'] += 1
+        
+            if players[i]['board'][guess_row][guess_col] != 'X':
+                    print ('\nYou missed!\n')
+                    players[i]['board'][guess_row][guess_col] = 'M'
+    
+
+            if turn == num_turns-1 and i == 1 or not players[i]['ships']:
+                print_board(players[0]['board'], players[1]['board'])
+                print('\nGame Over\n')
+                if num_players == 1:
+                    print(' '*10 + 'Statistics')
+                    print('-'*30)
+                    print('Shots fired: {}'.format(str(num_turns)))
+                    print('Shots hit: {}'.format(str(players[0]['shots_hit'])))
+                    print('Ships sunk: {}'.format(str(players[0]['ships_sunk'])))
+                    print('Ships remaining: {}'.format(str(players[0]['num_ships']-players[0]['ships_sunk'])))
+                    print('Accuracy: {}'.format(str((players[0]['shots_hit']//num_turns)*100)+'%'))
+                while 1:
+                    rematch = input('Play again? (Y/N)').upper()
+                    if rematch != 'Y' and rematch != 'N':
+                        print('Please enter Y or N')
+                    else:
+                        break
 
 
 print('\nGoodbye!')
@@ -278,14 +278,14 @@ print('\nGoodbye!')
 1) Work on effciency
   - generate just 1 board, and 1 board of ships for single player
 2) More ships
-  - fixed length of ships
-  - OR create formula to check max length of ship based on numships and board size
   - names for ships, can put in new list with corresponding indexes
 3) Allow player to place ships themselves
 4) Create a proper interface with pygame
 5) More features
   - ship specials
-  - statistics for 2 player
+  - fix statistics
   - custom names for ships
 6) each player goes once during 1 turn, not each one on alternate turns
+7) fix broken single player(game not ending)
+8) fix number of turns to min turns needed to sink ships, and max is number of squares
 """
