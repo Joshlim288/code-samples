@@ -27,7 +27,8 @@ def print_board(board1, board2):
             index += 1
 
 def print_stats(n):
-    print('Shots fired: {}'.format(str(turn)))
+    print('Shots fired: {}'.format(str(turn+1)))
+    print('Shots missed: {}'.format(str(turn+1-players[n]['shots_hit'])))
     print('Shots hit: {}'.format(str(players[n]['shots_hit'])))
     print('Ships sunk: {}'.format(str(players[n]['ships_sunk'])))
     print('Ships remaining: {}'.format(str(num_ships-players[n]['ships_sunk'])))
@@ -35,11 +36,11 @@ def print_stats(n):
 
 # declare default variables
 board_length = 4
-board_width = 4 # Max 26
-num_turns = 4
-num_ships = 1
+board_width = 4 # Min 4, Max 26
+num_ships = board_width - 2
 num_players = 1
 max_ship_length = 4 # At most board length/width
+num_turns = max_ship_length*num_ships + 2
 
 
 # think of board and ship as 
@@ -94,9 +95,11 @@ while menu_selection != '1':
             user_input = input()
             if user_input == '1':
                 num_players = 1
+                settings_selection = '0'
                 print('\nDone\n')
             elif user_input == '2':
                 num_players = 2
+                settings_selection = '0'
                 print('\nDone\n')
             elif user_input == '3':
                 settings_selection = '0'
@@ -135,9 +138,10 @@ while menu_selection != '1':
         while settings_selection == '4':
             print(' '*11 + 'Settings\n' + '-'*30 + '\n') 
             print(' '*6 + 'Enter no. of turns\n')
+            print(' '*11 + '{} to {}'.format(str(num_ships*max_ship_length), str(board_width*board_length)) )
             user_input = input()
             if user_input.isdigit():
-                if int(user_input) >= 1:
+                if num_ships*max_ship_length <= int(user_input) <= board_width*board_length:
                     num_turns = int(user_input)
                     print('\nDone\n')
                     settings_selection = '0'
@@ -213,7 +217,7 @@ while rematch == 'Y':
             print(players[1]['ships'])
         # get guess
             print_board(players[0]['board'], players[1]['board'])
-            print('\nTurn: {}'.format(turn+1))
+            print('\nTurn: {} of {}'.format(turn+1, num_turns))
             while 1:
                 guess = input( '{} input coordinates: '.format(players[i]['name']) )
                 if not guess:
@@ -295,17 +299,16 @@ print('\nGoodbye!')
 
 
 """
-1) Work on effciency
-  - generate just 1 board, and 1 board of ships for single player
+1) Work on stucture
+  - efficiency, generate just 1 board, and 1 board of ships for single player
+  - improve readability
 2) More ships
   - names for ships, can put in new list with corresponding indexes
 3) Allow player to place ships themselves
 4) Create a proper interface with pygame
 5) More features
   - ship specials
-  - fix statistics
   - custom names for ships
-6) each player goes once during 1 turn, not each one on alternate turns
-7) fix broken single player(game not ending)
-8) fix number of turns to min turns needed to sink ships, and max is number of squares
+6) make sure variables dont break the game
+
 """
