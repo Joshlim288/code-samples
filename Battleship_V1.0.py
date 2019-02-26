@@ -26,6 +26,12 @@ def print_board(board1, board2):
             print(str(index) + ' ' + ' '.join(row))
             index += 1
 
+def print_stats(n):
+    print('Shots fired: {}'.format(str(turn)))
+    print('Shots hit: {}'.format(str(players[n]['shots_hit'])))
+    print('Ships sunk: {}'.format(str(players[n]['ships_sunk'])))
+    print('Ships remaining: {}'.format(str(num_ships-players[n]['ships_sunk'])))
+    print('Accuracy: {}'.format(str((players[n]['shots_hit']/(turn+1))*100)+'%'))
 
 # declare default variables
 board_length = 4
@@ -146,8 +152,11 @@ while menu_selection != '1':
 
 rematch = 'Y'
 while rematch == 'Y':
-    # generate board
+    # generate board and wipe stats, ships
     for player in players:
+        player['shots_hit'] = 0
+        player['ships_sunk'] = 0
+        player['ships'] = []
         for x in range(board_length):
             try:
                 player['board'][x] = (['O'] * board_width)
@@ -200,6 +209,8 @@ while rematch == 'Y':
     # Game start
     for turn in range(num_turns):
         for i in range(num_players):
+            print(players[0]['ships'])
+            print(players[1]['ships'])
         # get guess
             print_board(players[0]['board'], players[1]['board'])
             print('\nTurn: {}'.format(turn+1))
@@ -222,7 +233,7 @@ while rematch == 'Y':
                             guess = (guess_row,guess_col)
     
                             if tile == 'M' or tile == 'X':
-                                print('You guessed that one already.')
+                                print('Yo1u guessed that one already.')
                             else:
                                 break
     
@@ -234,41 +245,50 @@ while rematch == 'Y':
                 if guess in ship:
                     players[i]['board'][guess_row][guess_col] = 'X'
                     ship.remove(guess)
+                    players[i]['shots_hit'] += 1
                     if not ship:
                         players[i]['ships'].remove([])
+                        players[i]['ships_sunk'] += 1
                         if not players[i]['ships']:
                             print('\nYou have sunk all the battleships!\n')
                             if num_players != 1:
                                 print('\n{} wins!\n'.format(players[i]['name']) )
                         else:
                             print('\nYou sunk a battleship!\n')
-                            players[i]['ships_sunk'] += 1
                     else:
                         print ('\nYou hit a battleship!\n')
-                        players[i]['shots_hit'] += 1
+
         
             if players[i]['board'][guess_row][guess_col] != 'X':
                     print ('\nYou missed!\n')
                     players[i]['board'][guess_row][guess_col] = 'M'
     
 
-            if turn == num_turns-1 and i == 1 or not players[i]['ships']:
-                print_board(players[0]['board'], players[1]['board'])
-                print('\nGame Over\n')
-                if num_players == 1:
-                    print(' '*10 + 'Statistics')
-                    print('-'*30)
-                    print('Shots fired: {}'.format(str(num_turns)))
-                    print('Shots hit: {}'.format(str(players[0]['shots_hit'])))
-                    print('Ships sunk: {}'.format(str(players[0]['ships_sunk'])))
-                    print('Ships remaining: {}'.format(str(players[0]['num_ships']-players[0]['ships_sunk'])))
-                    print('Accuracy: {}'.format(str((players[0]['shots_hit']//num_turns)*100)+'%'))
-                while 1:
-                    rematch = input('Play again? (Y/N)').upper()
-                    if rematch != 'Y' and rematch != 'N':
-                        print('Please enter Y or N')
-                    else:
-                        break
+            if not players[i]['ships']:
+                break
+            
+        if turn == num_turns-1 or not players[i]['ships']:
+            print_board(players[0]['board'], players[1]['board'])
+            print('\nGame Over\n')
+            if num_players == 1:
+                print(' '*10 + 'Statistics')
+                print('-'*30)
+                print_stats(0)
+            else:
+                print(' '*10 + 'Statistics')
+                print('-'*30)
+                print('\nPlayer 1:\n')
+                print_stats(0)
+                print('\nPlayer 2:\n')
+                print_stats(1)
+            while 1:
+                rematch = input('Play again? (Y/N)').upper()
+                if rematch != 'Y' and rematch != 'N':
+                    print('Please enter Y or N')
+                else:
+                    break
+            break
+        
 
 
 print('\nGoodbye!')
