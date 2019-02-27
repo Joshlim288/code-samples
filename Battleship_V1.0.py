@@ -213,8 +213,6 @@ while rematch == 'Y':
     # Game start
     for turn in range(num_turns):
         for i in range(num_players):
-            print(players[0]['ships'])
-            print(players[1]['ships'])
         # get guess
             print_board(players[0]['board'], players[1]['board'])
             print('\nTurn: {} of {}'.format(turn+1, num_turns))
