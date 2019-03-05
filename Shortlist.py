@@ -36,11 +36,46 @@ workbook = xlsxwriter.Workbook('Results.xlsx')
 worksheet = workbook.add_worksheet()
 
 # user variables
-start_url = 'https://www.tripadvisor.com.sg/Hotels-g255100-Melbourne_Victoria-Hotels.html'
-num_rev_criteria = 10
-min_rev_num = 10
-min_star_rating = 4
-min_room_num = 90
+while True:
+    start_url = input('Url: ')
+    if 'https://www.tripadvisor.com.sg/Hotels-' not in start_url:
+        print('Please enter a valid url. e.g https://www.tripadvisor.com.sg/Hotels-g255100-Melbourne_Victoria-Hotels.html')
+    else:
+        break
+
+
+while True:
+    min_rev_num = input('Min Reviews for property: ')
+    if min_rev_num.isdigit():
+        if int(min_rev_num) >= 0:
+            break
+    print('Please enter a valid number')
+
+
+while True:
+    print('Enter max number of low review number properties on a single page, from 0 to 30.')
+    print('(Program will exit once this condition is fufilled)')
+    num_rev_criteria = input('Input: ')
+    if num_rev_criteria.isdigit():
+        if 0 <= num_rev_criteria <= 30:
+            break
+    print('Please enter a valid number')
+
+
+while True:
+    min_star_rating = input('Min star rating for property: ')
+    if min_star_rating.isdigit():
+        if 0 <= int(min_star_rating) <= 5:
+            break
+    print('Please enter a valid number')
+
+
+while True:
+    min_room_num = input('Min number of rooms: ')
+    if min_room_num.isdigit():
+        if min_room_num >= 0:
+            break
+
 
 # get num pages
 r = requests.get(start_url)
@@ -131,4 +166,6 @@ Notes:
    
 ToDo:
 1) Replace try and excepts with something less problematic
+2) include vba script for formatting
+3) Get inputs  through tkinter
 '''
