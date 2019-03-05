@@ -138,7 +138,7 @@ for page_num in range(num_pages):
                     num_rooms = int(data)
 
             try:
-                address = soup.select_one('.street-address').text.strip()+ ', ' + soup.select_one('.locality').text.strip()[:-1] + soup.select_one('.country-name').text.strip()
+                address = soup.select_one('.street-address').text.strip()+ ', ' + soup.select_one('.locality').text.strip() + soup.select_one('.country-name').text.strip()
             except AttributeError:
                 address = ' '
 
