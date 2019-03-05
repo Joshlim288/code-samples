@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Mar  4 22:28:36 2019
-
 @author: JEOOOOOOOOOOOOSH
 """
 
@@ -102,13 +101,13 @@ for page_num in range(num_pages):
                     write_xlsx([property_name + '\n' + address + '\nT: ' + phone, star_rating, num_rooms], write_row)
         else:
             low_review_count += 1
-    try:
+    if page_num != num_pages - 1:
         next_page = soup.select_one('.nav.next.taLnk.ui_button.primary')['href']
         page_url = 'https://www.tripadvisor.com.sg' + next_page
         r = requests.get(page_url)
         save_html(r.content,'page')
         soup = BeautifulSoup(open_html('page'), 'html.parser')
-    except TypeError:
+    else:
         pass
     if low_review_count >= num_rev_criteria:
         break
