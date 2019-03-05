@@ -28,9 +28,6 @@ def write_xlsx(items, write_row):
 
 workbook = xlsxwriter.Workbook('Results.xlsx')
 worksheet = workbook.add_worksheet()
-r = requests.get(start_url)
-save_html(r.content, 'page')
-soup = BeautifulSoup(open_html('page'), 'html.parser')
 
 # user variables
 while True:
@@ -40,6 +37,11 @@ while True:
             'Please enter a valid url. e.g https://www.tripadvisor.com.sg/Hotels-g255100-Melbourne_Victoria-Hotels.html')
     else:
         break
+        
+print('fetching page...')
+r = requests.get(start_url)
+save_html(r.content, 'page')
+soup = BeautifulSoup(open_html('page'), 'html.parser')
 
 while True:
     min_rev_num = input('Min Reviews for property: ')
@@ -122,13 +124,11 @@ for page_num in range(num_pages):
             except AttributeError:
                 property_name = ' '
 
-
             try:
                 star_rating_class = soup.select_one('.hotels-hotel-review-about-with-photos-layout-TextItem__textitem--3CMuR span')['class'][1]
                 star_rating = float(star_rating_class[5] + '.' + star_rating_class[6])
             except TypeError:
                 star_rating = 0
-
 
             num_rooms = 0
             extra_info = soup.select('.hotels-hotel-review-about-addendum-AddendumItem__content--28NoV')
