@@ -37,7 +37,7 @@ while True:
             'Please enter a valid url. e.g https://www.tripadvisor.com.sg/Hotels-g255100-Melbourne_Victoria-Hotels.html')
     else:
         break
-        
+
 print('fetching page...')
 r = requests.get(start_url)
 save_html(r.content, 'page')
@@ -137,12 +137,10 @@ for page_num in range(num_pages):
                 if data.isdigit():
                     num_rooms = int(data)
 
-
             try:
-                address = soup.select_one('.street-address').text.strip()+ ', ' + soup.select_one('.locality').text.strip() + soup.select_one('.country-name').text.strip()
+                address = soup.select_one('.street-address').text.strip()+ ', ' + soup.select_one('.locality').text.strip()[:-1] + soup.select_one('.country-name').text.strip()
             except AttributeError:
                 address = ' '
-
 
             try:
                 phone = soup.select_one('.is-hidden-mobile.detail').text.strip()
