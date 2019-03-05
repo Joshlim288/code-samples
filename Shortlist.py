@@ -127,8 +127,7 @@ for page_num in range(num_pages):
                     num_rooms = int(data)
 
             try:
-                address = soup.select_one('.street-address').text.strip() + ', ' + soup.select_one(
-                    '.locality').text.strip() + ', ' + soup.select_one('.country-name').text.strip()
+                address = soup.select_one('.street-address').text.strip()
             except AttributeError:
                 address = ' '
 
@@ -161,10 +160,10 @@ Notes:
    If you require time/dist to airport, and address/phone from google,
    must be done manually. Google maps does not allow these pages to
    be scraped.
-
 ToDo:
 1) Replace try and excepts with something less problematic
 2) include vba script for formatting
 3) Get inputs  through tkinter
 4) Work on efficiency*
+5) Implement option to stop at certain page
 '''
