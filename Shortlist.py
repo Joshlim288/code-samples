@@ -28,12 +28,16 @@ def write_xlsx(items, write_row):
 
 workbook = xlsxwriter.Workbook('Results.xlsx')
 worksheet = workbook.add_worksheet()
+r = requests.get(start_url)
+save_html(r.content, 'page')
+soup = BeautifulSoup(open_html('page'), 'html.parser')
 
 # user variables
 while True:
     start_url = input('Url: ')
     if 'https://www.tripadvisor.com.sg/Hotels-' not in start_url:
-        print('Please enter a valid url. e.g https://www.tripadvisor.com.sg/Hotels-g255100-Melbourne_Victoria-Hotels.html')
+        print(
+            'Please enter a valid url. e.g https://www.tripadvisor.com.sg/Hotels-g255100-Melbourne_Victoria-Hotels.html')
     else:
         break
 
@@ -74,10 +78,15 @@ while True:
     print('Please enter a valid number')
 
 # get num pages
-r = requests.get(start_url)
-save_html(r.content, 'page')
-soup = BeautifulSoup(open_html('page'), 'html.parser')
-num_pages = int(soup.select_one('.pageNum.last.taLnk').text.strip())
+while True:
+    max_num_pages = int(soup.select_one('.pageNum.last.taLnk').text.strip())
+    num_pages = input('Page to search until(1 to {}):'.format(str(max_num_pages)))
+    if num_pages.isdigit():
+        if 1 <= int(num_pages) <= max_num_pages:
+            num_pages = int(num_pages)
+            break
+    print('Please enter a valid number')
+
 write_row = 0
 write_xlsx(['Property Details', 'Star Rating', 'Number of Rooms'], write_row)
 page_url = start_url
@@ -85,7 +94,7 @@ page_url = start_url
 print('Getting data...')
 # get property data
 for page_num in range(num_pages):
-    print('On page {}'.format(str(page_num+1)))
+    print('On page {}'.format(str(page_num + 1)))
     low_review_count = 0
     r = requests.get(page_url)
     save_html(r.content, 'page')
@@ -113,11 +122,13 @@ for page_num in range(num_pages):
             except AttributeError:
                 property_name = ' '
 
+
             try:
                 star_rating_class = soup.select_one('.hotels-hotel-review-about-with-photos-layout-TextItem__textitem--3CMuR span')['class'][1]
                 star_rating = float(star_rating_class[5] + '.' + star_rating_class[6])
             except TypeError:
                 star_rating = 0
+
 
             num_rooms = 0
             extra_info = soup.select('.hotels-hotel-review-about-addendum-AddendumItem__content--28NoV')
@@ -126,10 +137,12 @@ for page_num in range(num_pages):
                 if data.isdigit():
                     num_rooms = int(data)
 
+
             try:
-                address = soup.select_one('.street-address').text.strip()
+                address = soup.select_one('.street-address').text.strip()+ ', ' + soup.select_one('.locality').text.strip() + soup.select_one('.country-name').text.strip()
             except AttributeError:
                 address = ' '
+
 
             try:
                 phone = soup.select_one('.is-hidden-mobile.detail').text.strip()
@@ -160,10 +173,11 @@ Notes:
    If you require time/dist to airport, and address/phone from google,
    must be done manually. Google maps does not allow these pages to
    be scraped.
+5) Indiscriminate searching(no min num of reviews) will take 
+   around 1min per page
 ToDo:
 1) Replace try and excepts with something less problematic
 2) include vba script for formatting
 3) Get inputs  through tkinter
 4) Work on efficiency*
-5) Implement option to stop at certain page
 '''
