@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Mar  4 22:28:36 2019
-@author: Josh
+@author: JEOOOOOOOOOOOOSH
 """
 
 import requests
@@ -12,6 +12,7 @@ import xlsxwriter
 def get_soup(url):
     r = requests.get(url)
     return BeautifulSoup(r.content, 'html.parser')
+
 
 def write_xlsx(items, write_row):
     write_column = 0
@@ -143,6 +144,7 @@ for page_num in range(num_pages):
             low_review_count += 1
 
     if low_review_count >= num_rev_criteria:
+        print('Exiting due to low review count on page')
         break
 print('Done!')
 workbook.close()
