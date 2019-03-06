@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Mar  4 22:28:36 2019
-@author: JEOOOOOOOOOOOOSH
+@author: Josh
 """
 
 import requests
@@ -51,7 +51,7 @@ while True:
 
 while True:
     print('Enter max number of low review number properties on a single page, from 0 to 30.')
-    print('(Program will exit once this condition is fufilled)')
+    print('(Program will exit once this condition is fulfilled)')
     num_rev_criteria = input('Input: ')
     if num_rev_criteria.isdigit():
         if 0 <= int(num_rev_criteria) <= 30:
@@ -119,7 +119,7 @@ for page_num in range(num_pages):
                 property_name = ' '
 
             try:
-                star_rating_class = soup.select_one('.hotels-hotel-review-about-with-photos-layout-TextItem__textitem--3CMuR span')['class'][1]
+                star_rating_class = soup.select_one('.ui_star_rating')['class'][1]
                 star_rating = float(star_rating_class[5] + '.' + star_rating_class[6])
             except TypeError:
                 star_rating = 0
