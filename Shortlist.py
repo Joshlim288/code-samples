@@ -163,6 +163,13 @@ Notes:
    be scraped.
 5) Indiscriminate searching(no min num of reviews) will take 
    around 1min per page
+6) Sometimes, some properties may show 0 rooms or 0 stars even though they fulfill
+   the criteria. It is recommended to check all properties that show they have
+   0 rooms
+7) When copying results to shortlist file, paste values only. If you want
+   to bold the property names, use the included macro 'boldfirstline.bas'.
+   import it into the shortlist excel sheet and run it.
+8) ***Make sure not to have results.xlsx open while running the script.***
 ToDo:
 1) Replace try and excepts with something less problematic
 2) include vba script for formatting
