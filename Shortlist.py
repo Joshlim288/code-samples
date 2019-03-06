@@ -13,12 +13,6 @@ def get_soup(url):
     r = requests.get(url)
     return BeautifulSoup(r.content, 'html.parser')
 
-
-def open_html(path):
-    with open(path, 'rb') as f:
-        return f.read()
-
-
 def write_xlsx(items, write_row):
     write_column = 0
     for item in items:
