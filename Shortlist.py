@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 Created on Mon Mar  4 22:28:36 2019
-@author: JEOOOOOOOOOOOOSH
+@author: Josh
 """
 
 import requests
 from bs4 import BeautifulSoup
 import xlsxwriter
+import time
 
 
 def get_soup(url):
@@ -73,7 +74,6 @@ while True:
             break
     print('Please enter a valid number')
 
-# get num pages
 while True:
     max_num_pages = int(soup.select_one('.pageNum.last.taLnk').text.strip())
     num_pages = input('Page to search until(1 to {}):'.format(str(max_num_pages)))
@@ -83,14 +83,19 @@ while True:
             break
     print('Please enter a valid number')
 
+check = input("Make sure 'Results.xlsx' is closed and deleted. Once you are ready, press enter")
+
 write_row = 0
 write_xlsx(['Property Details', 'Star Rating', 'Number of Rooms'], write_row)
 page_url = start_url
+rejected_properties = 0
 
+start = time.time()
 print('Getting data...')
+
 # get property data
 for page_num in range(num_pages):
-    print('On page {}'.format(str(page_num + 1)))
+    print('\nOn page {}\n'.format(str(page_num + 1)))
     low_review_count = 0
     soup = get_soup(page_url)
     if page_num != num_pages - 1:
@@ -108,11 +113,13 @@ for page_num in range(num_pages):
             num_reviews = int(soup.select_one('.reviewCount').text.strip().split(' ')[0].replace(',', ''))
         except AttributeError:
             num_reviews = 0
+
+        try:
+            property_name = soup.select_one('#HEADING').text.strip()
+        except AttributeError:
+            property_name = ' '
+            
         if num_reviews >= min_rev_num:
-            try:
-                property_name = soup.select_one('#HEADING').text.strip()
-            except AttributeError:
-                property_name = ' '
 
             try:
                 star_rating_class = soup.select_one('.ui_star_rating')['class'][1]
@@ -121,7 +128,7 @@ for page_num in range(num_pages):
                 star_rating = 0
 
             num_rooms = 0
-            extra_info = soup.select('.react-container div div div')
+            extra_info = soup.select('#taplc_about_addendum_react_0 div div div div')
             for data in extra_info:
                 data = data.text.strip()
                 if data.isdigit():
@@ -141,14 +148,34 @@ for page_num in range(num_pages):
                 if num_rooms >= min_room_num or num_rooms == 0:
                     write_row += 1
                     write_xlsx([property_name + '\n' + address + '\nT: ' + phone, star_rating, num_rooms], write_row)
+                else:
+                    print("Rejected: '{}'\n".format(property_name) + ' Not enough rooms:{}'.format(num_rooms))
+            else:
+                print("Rejected: '{}'\n".format(property_name) + ' Not high enough star rating:{}'.format(star_rating))
         else:
             low_review_count += 1
+            print("Rejected: '{}'\n".format(property_name) + ' Not enough reviews:{}'.format(num_reviews))
+            print('Low review count: {}/{}'.format(low_review_count, num_rev_criteria))
 
     if low_review_count >= num_rev_criteria:
         print('Exiting due to low review count on page')
         break
-print('Done!')
+    
 workbook.close()
+end = time.time()
+
+print("\nDone! Results can be found in 'Results.xlsx' in the same folder\n")
+print('Results can be copied straight onto the shortlist(paste values only), formatting has already been done.')
+print('If any results have 0 stars or 0 rooms, Tripadvisor does not have this data')
+print('Address and phone numbers are based on Tripadvisor data as well\n')
+print('Number of pages searched: {}'.format(str(page_num + 1)))
+props_searched = (page_num - 1)*30 + len(prop_urls)
+print('Number of properties searched: {}'.format(str(props_searched)))
+print('Number of properties accepted: {}'.format(str(write_row - 1)))
+print('Number of properties rejected: {}'.format(str(props_searched - write_row + 1)))
+print('Time taken: {}'.format(str(start-end)))
+check = input('\nTo exit, press enter')
+
 
 '''
 Notes:
