@@ -24,9 +24,10 @@ def write_xlsx(items, write_row):
 workbook = xlsxwriter.Workbook('Results.xlsx')
 worksheet = workbook.add_worksheet()
 
+
 # user variables
 while True:
-    start_url = input('Url: ')
+    start_url = input('Start url: ')
     if 'https://www.tripadvisor.com.sg/Hotels-' not in start_url:
         print(
             'Please enter a valid url. e.g https://www.tripadvisor.com.sg/Hotels-g255100-Melbourne_Victoria-Hotels.html')
@@ -120,7 +121,7 @@ for page_num in range(num_pages):
                 star_rating = 0
 
             num_rooms = 0
-            extra_info = soup.select('.hotels-hotel-review-about-addendum-AddendumItem__content--28NoV')
+            extra_info = soup.select('.react-container div div div')
             for data in extra_info:
                 data = data.text.strip()
                 if data.isdigit():
@@ -169,7 +170,7 @@ Notes:
 7) When copying results to shortlist file, paste values only. If you want
    to bold the property names, use the included macro 'boldfirstline.bas'.
    import it into the shortlist excel sheet and run it.
-8) ***Make sure not to have results.xlsx open while running the script.***
+8) ***Make sure not to have results.xlsx open while running this script.***
 ToDo:
 1) Replace try and excepts with something less problematic
 2) include vba script for formatting
