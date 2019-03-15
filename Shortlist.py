@@ -94,7 +94,7 @@ print('Getting data...')
 
 # get property data
 for page_num in range(num_pages):
-    print('\nOn page {}\n'.format(str(page_num + 1)))
+    print('\nOn page {}'.format(str(page_num + 1)))
     low_review_count = 0
     soup = get_soup(page_url)
     if page_num != num_pages - 1:
@@ -148,16 +148,16 @@ for page_num in range(num_pages):
                     write_row += 1
                     write_xlsx([property_name + '\n' + address + '\nT: ' + phone, star_rating, num_rooms], write_row)
                 else:
-                    print("Rejected: '{}'\n".format(property_name) + ' - Not enough rooms: {}'.format(num_rooms))
+                    print("\nRejected: '{}'\n".format(property_name) + ' - Not enough rooms: {}'.format(num_rooms))
             else:
-                print("Rejected: '{}'\n".format(property_name)+' - Not high enough star rating: {}'.format(star_rating))
+                print("\nRejected: '{}'\n".format(property_name)+' - Not high enough star rating: {}'.format(star_rating))
         else:
             low_review_count += 1
-            print("Rejected: '{}'\n".format(property_name) + ' - Not enough reviews: {}'.format(num_reviews))
+            print("\nRejected: '{}'\n".format(property_name) + ' - Not enough reviews: {}'.format(num_reviews))
             print(' - Low review count: {}/{}'.format(low_review_count, num_rev_criteria))
 
     if low_review_count >= num_rev_criteria:
-        print('Exiting due to low review count on page')
+        print('\nExiting due to low review count on page')
         break
     
 workbook.close()
@@ -168,7 +168,7 @@ print('Results can be copied straight onto the shortlist(paste values only), for
 print('If any results have 0 stars or 0 rooms, They have to be found manually.')
 print('Address and phone numbers are based on Tripadvisor data as well\n')
 print('Number of pages searched: {}'.format(str(page_num + 1)))
-props_searched = (page_num - 1)*30 + len(prop_urls)
+props_searched = (page_num)*30
 print('Number of properties searched: {}'.format(str(props_searched)))
 print('Number of properties accepted: {}'.format(str(write_row - 1)))
 print('Number of properties rejected: {}'.format(str(props_searched - write_row + 1)))
