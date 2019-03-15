@@ -168,7 +168,7 @@ print('Results can be copied straight onto the shortlist(paste values only), for
 print('If any results have 0 stars or 0 rooms, They have to be found manually.')
 print('Address and phone numbers are based on Tripadvisor data as well\n')
 print('Number of pages searched: {}'.format(str(page_num + 1)))
-props_searched = (page_num)*30
+props_searched = (page_num + 1)*30
 print('Number of properties searched: {}'.format(str(props_searched)))
 print('Number of properties accepted: {}'.format(str(write_row - 1)))
 print('Number of properties rejected: {}'.format(str(props_searched - write_row + 1)))
