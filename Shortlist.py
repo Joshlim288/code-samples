@@ -15,10 +15,10 @@ def get_soup(url):
     return BeautifulSoup(r.content, 'html.parser')
 
 
-def write_xlsx(items, write_row):
+def write_xlsx(items, xlsx_write_row):
     write_column = 0
     for item in items:
-        worksheet.write(write_row, write_column, item)
+        worksheet.write(xlsx_write_row, write_column, item)
         write_column += 1
 
 
@@ -30,8 +30,7 @@ worksheet = workbook.add_worksheet()
 while True:
     start_url = input('Start url: ')
     if 'https://www.tripadvisor.com.sg/Hotels-' not in start_url:
-        print(
-            'Please enter a valid url. e.g https://www.tripadvisor.com.sg/Hotels-g255100-Melbourne_Victoria-Hotels.html')
+        print('Please enter a valid url. e.g https://www.tripadvisor.com.sg/Hotels-g255100-Melbourne_Victoria-Hotels.html')
     else:
         break
 
@@ -47,7 +46,7 @@ while True:
     print('Please enter a valid number')
 
 while True:
-    print('Enter max number of low review number properties on a single page, from 0 to 30.')
+    print('Enter max number of low review number properties on a single page, from 0 to 30')
     print('(Program will exit once this condition is fulfilled)')
     num_rev_criteria = input('Input: ')
     if num_rev_criteria.isdigit():
@@ -82,8 +81,8 @@ while True:
             num_pages = int(num_pages)
             break
     print('Please enter a valid number')
-
-check = input("Make sure 'Results.xlsx' is closed and deleted. Once you are ready, press enter")
+print('-'*30 + '\n')
+check = input("\nMake sure 'Results.xlsx' is closed and deleted. Once you are ready, press enter")
 
 write_row = 0
 write_xlsx(['Property Details', 'Star Rating', 'Number of Rooms'], write_row)
@@ -128,14 +127,14 @@ for page_num in range(num_pages):
                 star_rating = 0
 
             num_rooms = 0
-            extra_info = soup.select('#taplc_about_addendum_react_0 div div div div')
+            extra_info = soup.select('.hotels-hotel-review-about-addendum-AddendumItem__content--iVts5')
             for data in extra_info:
                 data = data.text.strip()
                 if data.isdigit():
                     num_rooms = int(data)
 
             try:
-                address = soup.select_one('.street-address').text.strip()+ ', ' + soup.select_one('.locality').text.strip() + soup.select_one('.country-name').text.strip()
+                address = soup.select_one('.street-address').text.strip() + ', ' + soup.select_one('.locality').text.strip() + soup.select_one('.country-name').text.strip()
             except AttributeError:
                 address = ' '
 
@@ -149,12 +148,12 @@ for page_num in range(num_pages):
                     write_row += 1
                     write_xlsx([property_name + '\n' + address + '\nT: ' + phone, star_rating, num_rooms], write_row)
                 else:
-                    print("Rejected: '{}'\n".format(property_name) + ' - Not enough rooms:{}'.format(num_rooms))
+                    print("Rejected: '{}'\n".format(property_name) + ' - Not enough rooms: {}'.format(num_rooms))
             else:
-                print("Rejected: '{}'\n".format(property_name) + ' - Not high enough star rating:{}'.format(star_rating))
+                print("Rejected: '{}'\n".format(property_name)+' - Not high enough star rating: {}'.format(star_rating))
         else:
             low_review_count += 1
-            print("Rejected: '{}'\n".format(property_name) + ' - Not enough reviews:{}'.format(num_reviews))
+            print("Rejected: '{}'\n".format(property_name) + ' - Not enough reviews: {}'.format(num_reviews))
             print(' - Low review count: {}/{}'.format(low_review_count, num_rev_criteria))
 
     if low_review_count >= num_rev_criteria:
@@ -166,7 +165,7 @@ end = time.time()
 
 print("\nDone! Results can be found in 'Results.xlsx' in the same folder\n")
 print('Results can be copied straight onto the shortlist(paste values only), formatting has already been done.')
-print('If any results have 0 stars or 0 rooms, Tripadvisor does not have this data')
+print('If any results have 0 stars or 0 rooms, They have to be found manually.')
 print('Address and phone numbers are based on Tripadvisor data as well\n')
 print('Number of pages searched: {}'.format(str(page_num + 1)))
 props_searched = (page_num - 1)*30 + len(prop_urls)
@@ -178,7 +177,6 @@ while True:
     check = input('\nTo exit, press enter')
     if True:
         break
-
 
 
 '''
@@ -207,4 +205,6 @@ ToDo:
 2) include vba script for formatting
 3) Get inputs  through tkinter
 4) Work on efficiency*
+5) Replace num_rooms selector. It contains a random string that needs to be updated anytime tripadvisor recieves and update.
+  - The #id div div div div div selector is very slow, find an alternative
 '''
