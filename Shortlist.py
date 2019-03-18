@@ -141,13 +141,14 @@ for page_num in range(num_pages):
             property_name = ' '
             
         if num_reviews >= min_rev_num:
-
+            # star rating
             try:
                 star_rating_class = soup.select_one('.ui_star_rating')['class'][1]
                 star_rating = float(star_rating_class[5] + '.' + star_rating_class[6])
             except TypeError:
                 star_rating = 0
 
+            # num rooms
             if rooms_selector == '':
                 rooms_selector = get_selector(soup)
             if rooms_selector == '':
@@ -159,16 +160,19 @@ for page_num in range(num_pages):
                     if data.isdigit():
                         num_rooms = int(data)
 
+            # address
             try:
                 address = soup.select_one('.street-address').text.strip() + ', ' + soup.select_one('.locality').text.strip() + soup.select_one('.country-name').text.strip()
             except AttributeError:
                 address = ' '
 
+            #phone
             try:
                 phone = soup.select_one('.is-hidden-mobile.detail').text.strip()
             except AttributeError:
                 phone = ' '
 
+            # Check conditions, write to xl
             if keep_props.upper() == 'Y':
                 if star_rating >= min_star_rating or star_rating == 0:
                     if num_rooms >= min_room_num or num_rooms == 0:
@@ -246,7 +250,4 @@ ToDo:
 1) Replace try and excepts with something less problematic
 2) include vba script for formatting
 3) Get inputs  through tkinter
-4) Work on efficiency*
-5) Replace num_rooms selector. It contains a random string that needs to be updated anytime tripadvisor recieves and update.
-  - The #id div div div div div selector is very slow, find an alternative
 '''
