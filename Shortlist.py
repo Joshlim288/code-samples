@@ -10,6 +10,15 @@ import xlsxwriter
 import time
 
 
+def get_selector(html_soup):
+    selector_list = html_soup.select('div[class^="hotels-hotel-review-about-addendum-AddendumItem__content--"]')
+    for index in range(len(selector_list)):
+        if selector_list[index].text.strip().isdigit():
+            selector = '.' + selector_list[index]['class'][0]
+            return selector
+    return ''
+
+
 def get_soup(url):
     r = requests.get(url)
     return BeautifulSoup(r.content, 'html.parser')
@@ -24,7 +33,8 @@ def write_xlsx(items, xlsx_write_row):
 
 workbook = xlsxwriter.Workbook('Results.xlsx')
 worksheet = workbook.add_worksheet()
-
+rooms_selector = ''
+total_properties = 0
 
 # user variables
 while True:
@@ -81,8 +91,19 @@ while True:
             num_pages = int(num_pages)
             break
     print('Please enter a valid number')
+
+while True:
+    keep_props = input('Do you want to include properties with missing number of rooms/star rating?(Y/N)')
+    if keep_props.isalpha():
+        if keep_props.upper() == 'Y' or keep_props.upper() == 'N':
+            break
+    print('Please enter a valid response')
+
+
 print('-'*30 + '\n')
 check = input("\nMake sure 'Results.xlsx' is closed and deleted. Once you are ready, press enter")
+
+
 
 write_row = 0
 write_xlsx(['Property Details', 'Star Rating', 'Number of Rooms'], write_row)
@@ -107,6 +128,7 @@ for page_num in range(num_pages):
     for row in rows:
         prop_urls.append('https://www.tripadvisor.com.sg' + row['href'])
     for prop in prop_urls:
+        total_properties += 1
         soup = get_soup(prop)
         try:
             num_reviews = int(soup.select_one('.reviewCount').text.strip().split(' ')[0].replace(',', ''))
@@ -126,12 +148,16 @@ for page_num in range(num_pages):
             except TypeError:
                 star_rating = 0
 
-            num_rooms = 0
-            extra_info = soup.select('.hotels-hotel-review-about-addendum-AddendumItem__content--iVts5')
-            for data in extra_info:
-                data = data.text.strip()
-                if data.isdigit():
-                    num_rooms = int(data)
+            if rooms_selector == '':
+                rooms_selector = get_selector(soup)
+            if rooms_selector == '':
+                num_rooms = 0
+            else:
+                extra_info = soup.select(rooms_selector)
+                for data in extra_info:
+                    data = data.text.strip()
+                    if data.isdigit():
+                        num_rooms = int(data)
 
             try:
                 address = soup.select_one('.street-address').text.strip() + ', ' + soup.select_one('.locality').text.strip() + soup.select_one('.country-name').text.strip()
@@ -143,14 +169,30 @@ for page_num in range(num_pages):
             except AttributeError:
                 phone = ' '
 
-            if star_rating >= min_star_rating or star_rating == 0:
-                if num_rooms >= min_room_num or num_rooms == 0:
-                    write_row += 1
-                    write_xlsx([property_name + '\n' + address + '\nT: ' + phone, star_rating, num_rooms], write_row)
+            if keep_props.upper() == 'Y':
+                if star_rating >= min_star_rating or star_rating == 0:
+                    if num_rooms >= min_room_num or num_rooms == 0:
+                        write_row += 1
+                        write_xlsx([property_name + '\n' + address + '\nT: ' + phone, star_rating, num_rooms], write_row)
+                    else:
+                        print("\nRejected: '{}'\n".format(property_name) + ' - Not enough rooms: {}'.format(num_rooms))
                 else:
-                    print("\nRejected: '{}'\n".format(property_name) + ' - Not enough rooms: {}'.format(num_rooms))
+                    print("\nRejected: '{}'\n".format(property_name)+' - Not high enough star rating: {}'.format(star_rating))
+
             else:
-                print("\nRejected: '{}'\n".format(property_name)+' - Not high enough star rating: {}'.format(star_rating))
+                if star_rating >= min_star_rating:
+                    if num_rooms >= min_room_num:
+                        write_row += 1
+                        write_xlsx([property_name + '\n' + address + '\nT: ' + phone, star_rating, num_rooms], write_row)
+                    elif num_rooms == 0:
+                        print("\nRejected: '{}'\n".format(property_name) + ' - Information missing: Number of rooms')
+                    else:
+                        print("\nRejected: '{}'\n".format(property_name) + ' - Not enough rooms: {}'.format(num_rooms))
+                elif star_rating == 0:
+                    print("\nRejected: '{}'\n".format(property_name) + ' - information missing: Star rating')
+                else:
+                    print("\nRejected: '{}'\n".format(property_name)+' - Not high enough star rating: {}'.format(star_rating))
+ 
         else:
             low_review_count += 1
             print("\nRejected: '{}'\n".format(property_name) + ' - Not enough reviews: {}'.format(num_reviews))
@@ -159,24 +201,24 @@ for page_num in range(num_pages):
     if low_review_count >= num_rev_criteria:
         print('\nExiting due to low review count on page')
         break
-    
+
 workbook.close()
 end = time.time()
 
 print("\nDone! Results can be found in 'Results.xlsx' in the same folder\n")
 print('Results can be copied straight onto the shortlist(paste values only), formatting has already been done.')
-print('If any results have 0 stars or 0 rooms, They have to be found manually.')
+if keep_props.upper() == 'Y':
+    print('If any results have 0 stars or 0 rooms, Tripadvisor does not have the data. \nThey have to be found manually.')
 print('Address and phone numbers are based on Tripadvisor data as well\n')
 print('Number of pages searched: {}'.format(str(page_num + 1)))
-props_searched = (page_num + 1)*30
-print('Number of properties searched: {}'.format(str(props_searched)))
-print('Number of properties accepted: {}'.format(str(write_row - 1)))
-print('Number of properties rejected: {}'.format(str(props_searched - write_row + 1)))
-print('Time taken: {} minutes'.format(str((end-start)//60)))
-while True:
-    check = input('\nTo exit, press enter')
-    if True:
-        break
+print('Number of properties searched: {}'.format(str(total_properties)))
+print('Number of properties accepted: {}'.format(str(write_row)))
+print('Number of properties rejected: {}'.format(str(total_properties - write_row)))
+m, s = divmod((end-start), 60)
+h, m = divmod(m, 60)
+print('Time Taken: {:d}:{:02d}:{:02d}'.format(int(h), int(m), int(s)))
+input('\nPress enter to close the program')
+
 
 
 '''
