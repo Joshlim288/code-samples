@@ -12,9 +12,9 @@ import time
 
 def get_selector(html_soup):
     selector_list = html_soup.select('div[class^="hotels-hotel-review-about-addendum-AddendumItem__content--"]')
-    for index in range(len(selector_list)):
-        if selector_list[index].text.strip().isdigit():
-            selector = '.' + selector_list[index]['class'][0]
+    for div in selector_list:
+        if div.text.strip().isdigit():
+            selector = '.' + div['class'][0]
             return selector
     return ''
 
