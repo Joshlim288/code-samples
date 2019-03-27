@@ -20,13 +20,13 @@ print('Getting data...\n')
 
 while True:
     # Variables
-    url = 'https://sg.carousell.com/search/products/?sort_by=time_created%2Cdescending&query=nintendo%20switch%20games&cc_id=412'
+    url = 'https://sg.carousell.com/search/products/?cc_id=412&query=nintendo%20switch%20&sort_by=time_created%2Cdescending'
     delay = 5 # in minutes
 
     # Get current first sale
     r = requests.get(url)
     soup = BeautifulSoup(r.content, 'html.parser')
-    current_first_sale = soup.select_one('.G-ab')
+    current_first_sale = soup.select_one('.C-ab')
 
     # Check page
     while True:
@@ -34,9 +34,9 @@ while True:
         print('Refreshing...\n')
         r = requests.get(url)
         soup = BeautifulSoup(r.content, 'html.parser')
-        new_first_sale = soup.select_one('.G-ab')
+        new_first_sale = soup.select_one('.C-ab')
         if new_first_sale.text.strip() != current_first_sale.text.strip():
-            print('New listing found: {}'.format(new_first_sale.text.strip()))
+            print('New listing found!')
             print('Opening web page...')
             break
         print('{}: No new updates\n'.format(datetime.now().strftime('%Y-%m-%d %H:%M:%S')))
@@ -47,5 +47,3 @@ while True:
     if check == 'Y':
         break
     
-    
-
