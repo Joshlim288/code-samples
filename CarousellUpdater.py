@@ -14,8 +14,7 @@ def open_html(path):
     with open(path, 'rb') as i:
         return i.read()
     
-# check = input('close script when new listing found?').upper()
-check = 'N'
+check = input('close script when new listing found?').upper()
 print('Getting data...\n')
 
 while True:
