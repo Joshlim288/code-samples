@@ -68,12 +68,12 @@ while True:
 
 while True:
     min_star_rating = input('Min star rating for property: ')
-    if min_star_rating.isdigit():
-        if 0 <= int(min_star_rating) <= 5:
-            min_star_rating = float(min_star_rating)
+    try:
+        min_star_rating = float(min_star_rating)
+        if 0 <= float(min_star_rating) <= 5:
             break
-
-    print('Please enter a valid number')
+    except ValueError:
+        print('Please enter a valid number')
 
 while True:
     min_room_num = input('Min number of rooms: ')
@@ -104,7 +104,6 @@ print('-'*30 + '\n')
 check = input("\nMake sure 'Results.xlsx' is closed and deleted. Once you are ready, press enter")
 
 
-
 write_row = 0
 write_xlsx(['Property Details', 'Star Rating', 'Number of Rooms'], write_row)
 page_url = start_url
@@ -130,10 +129,25 @@ for page_num in range(num_pages):
     for prop in prop_urls:
         total_properties += 1
         soup = get_soup(prop)
-        try:
-            num_reviews = int(soup.select_one('.reviewCount').text.strip().split(' ')[0].replace(',', ''))
-        except AttributeError:
-            num_reviews = 0
+        num_reviews = 0
+        property_name = ''
+        star_rating = 0
+        num_rooms = 0
+        extra_info = []
+        star_rating_class = 0
+        address = ' '
+        phone = ' '
+        attempt = 0
+        while True:
+            try:
+                num_reviews = int(soup.select_one('.reviewCount').text.strip().split(' ')[0].replace(',', ''))
+            except AttributeError:
+                num_reviews = 0
+            if attempt > 1 or num_reviews != 0:
+                break
+            else:
+                soup = get_soup(prop)
+                attempt += 1
 
         try:
             property_name = soup.select_one('#HEADING').text.strip()
@@ -142,23 +156,54 @@ for page_num in range(num_pages):
             
         if num_reviews >= min_rev_num:
             # star rating
-            try:
-                star_rating_class = soup.select_one('.ui_star_rating')['class'][1]
-                star_rating = float(star_rating_class[5] + '.' + star_rating_class[6])
-            except TypeError:
-                star_rating = 0
+            while True:
+                try:
+                    star_rating_class = soup.select('.ui_star_rating')
+                    for index in range(len(star_rating_class)):
+                        star_rating_class[index] = star_rating_class[index]['class']
+                except TypeError:
+                    star_rating = 0
+                # fix this part
+                if star_rating_class != 0:
+                    for lst in star_rating_class:
+                        for item in lst:
+                            if 'cross-sells-items-grid-comparisons-Icon__icon' in item:
+                                star_rating = 'wrong star rating'
+                                break
+                        if star_rating == 'wrong star rating':
+                            star_rating = 0
+                        else:
+                            star_rating = float(lst[1][5] + '.' + lst[1][6])
+                            break
+                if attempt > 1 or star_rating != 0:
+                    break
+                else:
+                    soup = get_soup(prop)
+                    attempt += 1
+
+            attempt = 0
 
             # num rooms
-            if rooms_selector == '':
-                rooms_selector = get_selector(soup)
-            if rooms_selector == '':
-                num_rooms = 0
-            else:
-                extra_info = soup.select(rooms_selector)
-                for data in extra_info:
-                    data = data.text.strip()
-                    if data.isdigit():
-                        num_rooms = int(data)
+            while True:
+                if not rooms_selector:
+                    rooms_selector = get_selector(soup)
+                    
+                if not rooms_selector:
+                    num_rooms = 0
+                else:
+                    extra_info = soup.select(rooms_selector)
+                    if not extra_info:
+                        extra_info = soup.select('.textitem')
+                    for data in extra_info:
+                        data = data.text.strip()
+                        if data.isdigit():
+                            num_rooms = int(data)
+
+                if attempt > 1 or num_rooms != 0:
+                    break
+                else:
+                    soup = get_soup(prop)
+                    attempt += 1
 
             # address
             try:
@@ -166,7 +211,7 @@ for page_num in range(num_pages):
             except AttributeError:
                 address = ' '
 
-            #phone
+            # phone
             try:
                 phone = soup.select_one('.is-hidden-mobile.detail').text.strip()
             except AttributeError:
