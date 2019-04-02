@@ -295,4 +295,6 @@ ToDo:
 1) Replace try and excepts with something less problematic
 2) include vba script for formatting
 3) Get inputs  through tkinter
+4) eliminate duplicates
+5) create example sheet
 '''
