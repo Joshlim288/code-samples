@@ -235,7 +235,7 @@ while rematch == 'Y':
                             guess = (guess_row,guess_col)
     
                             if tile == 'M' or tile == 'X':
-                                print('Yo1u guessed that one already.')
+                                print('You guessed that one already.')
                             else:
                                 break
     
