@@ -30,8 +30,8 @@ def write_xlsx(items, xlsx_write_row):
         worksheet.write(xlsx_write_row, write_column, item)
         write_column += 1
 
-
-workbook = xlsxwriter.Workbook('Results.xlsx')
+workbookname = 'Results' + input('Name of station: ') + '.xlsx'
+workbook = xlsxwriter.Workbook(workbookname)
 worksheet = workbook.add_worksheet()
 rooms_selector = ''
 total_properties = 0
@@ -101,7 +101,7 @@ while True:
 
 
 print('-'*30 + '\n')
-check = input("\nMake sure 'Results.xlsx' is closed and deleted. Once you are ready, press enter")
+check = input("\nMake sure Results sheet is closed and deleted. Once you are ready, press enter")
 
 
 write_row = 0
@@ -290,7 +290,7 @@ Notes:
 7) When copying results to shortlist file, paste values only. If you want
    to bold the property names, use the included macro 'boldfirstline.bas'.
    import it into the shortlist excel sheet and run it.
-8) ***Make sure not to have results.xlsx open while running this script.***
+8) ***Make sure not to have results sheet open while running this script.***
 ToDo:
 1) Replace try and excepts with something less problematic
 2) include vba script for formatting
